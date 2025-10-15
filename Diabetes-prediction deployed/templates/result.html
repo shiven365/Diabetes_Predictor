@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetes Predictor - Results</title>
+  <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap' rel='stylesheet'>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* Dynamic background based on prediction */
+    {% if prediction==1 %}
+    body {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    {% else %}
+    body {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    {% endif %}
+
+    .particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+      top: 0;
+      left: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      animation: rise 15s infinite ease-in;
+    }
+
+    @keyframes rise {
+      0% {
+        bottom: -10px;
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        bottom: 100vh;
+        opacity: 0;
+      }
+    }
+
+    .result-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 50px 40px;
+      border-radius: 30px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+      animation: scaleIn 0.8s ease-out;
+      position: relative;
+      z-index: 10;
+      margin: 20px 0;
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.5) translateY(50px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .icon-wrapper {
+      margin-bottom: 30px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .icon {
+      font-size: 80px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .prediction-text {
+      font-size: 36px;
+      font-weight: 700;
+      margin: 20px 0;
+      animation: slideIn 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .danger {
+      color: #f5576c;
+      text-shadow: 2px 2px 10px rgba(245, 87, 108, 0.3);
+    }
+
+    .safe {
+      color: #00d2ff;
+      text-shadow: 2px 2px 10px rgba(0, 210, 255, 0.3);
+    }
+
+    .image-container {
+      margin: 30px 0;
+      animation: fadeIn 1s ease-out 0.5s both;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .gif {
+      max-width: 350px;
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .gif:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+    .info-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 30px 0;
+      animation: slideUp 0.8s ease-out 0.7s both;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .additional-info {
+      margin: 30px 0;
+      text-align: left;
+      animation: slideUp 0.8s ease-out 0.9s both;
+    }
+
+    .additional-info h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    .additional-info p {
+      color: #555;
+      margin-bottom: 10px;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .additional-info ul {
+      color: #555;
+      padding-left: 20px;
+      margin-top: 15px;
+    }
+
+    .additional-info li {
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .btn-container {
+      margin-top: 20px;
+      animation: slideUp 0.8s ease-out 1.1s both;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      animation: confetti-fall 3s linear infinite;
+      z-index: 5;
+    }
+
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .result-container {
+        padding: 40px 25px;
+      }
+      
+      .prediction-text {
+        font-size: 28px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+
+      .gif {
+        max-width: 280px;
+      }
+      
+      .btn {
+        padding: 12px 30px;
+        font-size: 14px;
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+  </div>
+
+  <div class="result-container">
+    {% if prediction==1 %}
+    <!-- POSITIVE RESULT - DIABETES DETECTED -->
+    <div class="icon-wrapper">
+      <div class="icon">⚠️</div>
+    </div>
+    <h1>Your Diabetes Test Results</h1>
+    <div class="prediction-text danger">
+      Oops! You have DIABETES.
+    </div>
+    <div class="image-container">
+      <img class="gif" src="{{ url_for('static', filename='diabetes.webp') }}" alt="Diabetes Alert">
+    </div>
+    <div class="info-box">
+      <p><strong>Important:</strong> Please consult with a healthcare professional immediately. Early intervention and proper management can help control diabetes effectively.</p>
+    </div>
+    <div class="additional-info">
+      <h2>What to Do Next</h2>
+      <p>Based on your test results, we recommend:</p>
+      <ul>
+        <li>Schedule an appointment with your healthcare provider</li>
+        <li>Discuss appropriate treatment options</li>
+        <li>Learn about dietary changes for diabetes management</li>
+        <li>Understand the importance of regular blood sugar monitoring</li>
+        <li>Consider lifestyle modifications including regular exercise</li>
+        <li>Join a support group for people with diabetes</li>
+      </ul>
+    </div>
+    {% else %}
+    <!-- NEGATIVE RESULT - NO DIABETES -->
+    <div class="icon-wrapper">
+      <div class="icon">✅</div>
+    </div>
+    <h1>Your Diabetes Test Results</h1>
+    <div class="prediction-text safe">
+      Hurrah! You DON'T have diabetes.
+    </div>
+    <div class="image-container">
+      <img class="gif" src="{{ url_for('static', filename='no-diabetes.webp') }}" alt="Celebration">
+    </div>
+    <div class="info-box">
+      <p><strong>Great News!</strong> Keep maintaining a healthy lifestyle with balanced diet, regular exercise, and routine check-ups to stay healthy.</p>
+    </div>
+    <div class="additional-info">
+      <h2>Prevention Tips</h2>
+      <p>To maintain your diabetes-free status:</p>
+      <ul>
+        <li>Maintain a healthy weight</li>
+        <li>Eat a balanced diet rich in fruits and vegetables</li>
+        <li>Exercise regularly (at least 30 minutes daily)</li>
+        <li>Get regular health check-ups</li>
+        <li>Limit sugar and processed foods</li>
+        <li>Stay hydrated and manage stress</li>
+      </ul>
+    </div>
+    {% endif %}
+    
+    <div class="btn-container">
+      <a href="/" class="btn">Test Again</a>
+      <a href="/" class="btn">Home Page</a>
+    </div>
+  </div>
+
+  <script>
+    // Create confetti for negative results (no diabetes)
+    {% if prediction==0 %}
+    function createConfetti() {
+      const colors = ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140'];
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.animationDelay = Math.random() * 3 + 's';
+          confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+          document.body.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 5000);
+        }, i * 30);
+      }
+    }
+    
+    // Trigger confetti when page loads for negative result
+    window.onload = function() {
+      createConfetti();
+    };
+    {% endif %}
+
+    // Add pulsing effect to images
+    const images = document.querySelectorAll('.gif');
+    images.forEach(img => {
+      img.addEventListener('mouseenter', function() {
+        this.style.animation = 'pulse 0.5s ease-in-out';
+      });
+      img.addEventListener('animationend', function() {
+        this.style.animation = '';
+      });
+    });
+  </script>
+</body>
+</html>
