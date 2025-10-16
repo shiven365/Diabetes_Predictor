@@ -52,12 +52,12 @@ The project follows these key steps:
 
 1.  Clone this repository:
     ```bash
-    git clone [https://github.com/your-username/your-repository-name.git](https://github.com/your-username/your-repository-name.git)
+    git clone https://github.com/shiven365/Diabetes_Predictor.git
     ```
 
 2.  Navigate to the project directory:
     ```bash
-    cd your-repository-name
+    cd Diabetes_Predictor
     ```
 
 3.  Install the required dependencies:
