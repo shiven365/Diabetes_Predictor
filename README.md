@@ -57,7 +57,7 @@ The project follows these key steps:
 
 2.  Navigate to the project directory:
     ```bash
-    cd Diabetes_Predictor
+    cd Diabetes-prediction deployed
     ```
 
 3.  Install the required dependencies:
